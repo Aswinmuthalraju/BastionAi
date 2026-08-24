@@ -1,0 +1,80 @@
+# Model routing manifest. Adding an entry here makes it immediately routable
+# by task tag — no router code changes (see backend/tests/test_manifest_extensibility.py).
+#
+# `endpoint` must point to an OpenAI-compatible /v1/chat/completions server.
+# In this development environment that's a local Ollama instance. In
+# production, point it at your vLLM cluster and set `served_model` to the
+# model vLLM was launched with — the request/response contract is identical,
+# so no application code changes. See SETUP.md "Production model swap".
+
+models:
+  - id: "llama-3.3-70b"
+    name: "Llama 3.3 70B Instruct (Quantized)"
+    endpoint: "http://localhost:11434/v1"
+    served_model: "qwen2.5:7b"
+    modality: "text"
+    context_window: 128000
+    task_tags:
+      - "reasoning"
+      - "document_summary"
+      - "general"
+      - "policy"
+      - "rag"
+    is_default: true
+    deployment_note: >
+      Production target: vLLM-hosted Llama 3.3 70B. This machine has no GPU
+      cluster, so local dev genuinely serves this routing role with Ollama's
+      Qwen2.5 7B over the same OpenAI-compatible API — real inference, smaller model.
+
+  - id: "qwen2.5-coder"
+    name: "Qwen 2.5 Coder 32B"
+    endpoint: "http://localhost:11434/v1"
+    served_model: "qwen2.5-coder:7b"
+    modality: "text"
+    context_window: 65536
+    task_tags:
+      - "code"
+      - "script_execution"
+      - "data_analysis"
+      - "sql"
+      - "math"
+    is_default: false
+    deployment_note: >
+      Production target: vLLM-hosted Qwen2.5 Coder 32B. Local dev runs the
+      genuinely distinct Qwen2.5-Coder 7B weights via Ollama.
+
+  - id: "qwen2-vl"
+    name: "Qwen2-VL 7B Vision"
+    endpoint: "http://localhost:11434/v1"
+    served_model: "qwen2.5:7b"
+    modality: "multimodal"
+    context_window: 32768
+    task_tags:
+      - "vision"
+      - "ocr"
+      - "pid_diagram"
+      - "inspection_report"
+    is_default: false
+    deployment_note: >
+      Production target: GPU-hosted Qwen2-VL reading diagrams directly. This
+      environment has no vision-capable local model, so the pipeline instead
+      runs real Tesseract OCR against the uploaded file (app.multimodal.ocr)
+      and structures the genuinely extracted text with the text LLM above —
+      it reads the actual file, it does not fabricate equipment lists.
+
+  - id: "deberta-v3-guard"
+    name: "DeBERTa-v3 Injection Classifier"
+    endpoint: "http://localhost:11434/v1"
+    served_model: "qwen2.5:7b"
+    modality: "classification"
+    context_window: 4096
+    task_tags:
+      - "security"
+      - "injection_classification"
+      - "guardrail"
+    is_default: false
+    deployment_note: >
+      Production target: a fine-tuned DeBERTa-v3 sequence classifier for
+      low-latency screening. Local dev runs the same constrained-JSON
+      classification prompt against Qwen2.5 7B as Rail 1 of the dual-rail
+      screen — real model inference, not keyword matching.

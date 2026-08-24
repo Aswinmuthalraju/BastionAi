@@ -1,0 +1,70 @@
+/*
+  Instrument Panel design system.
+
+  Deliberate single-theme commitment: this is control-room HMI heritage, not a
+  marketing site — real instrument panels don't have a light mode. Colour is
+  reserved exclusively for machine state (--nominal / --caution / --interlock
+  / --verified) and never used decoratively. Contrast is checked against WCAG
+  AA within this one theme rather than split across two palettes.
+*/
+
+:root {
+  /* Surfaces */
+  --ground: #10151c;
+  --panel: #161c26;
+  --panel-raised: #1b2230;
+  --seam: #232b38;
+  --seam-strong: #2e3849;
+
+  /* Machine state — the only colours in this system, each meaning exactly one thing */
+  --nominal: #5aa9e6;
+  --nominal-dim: #3d7bab;
+  --caution: #e0a03c;
+  --caution-dim: #a97a2c;
+  --interlock: #e2685a;
+  --interlock-dim: #a94a3f;
+  --verified: #5fb88f;
+  --verified-dim: #417c61;
+
+  /* Text */
+  --text-primary: #e6eaf0;
+  --text-secondary: #8a94a6;
+  --text-tertiary: #5c6577;
+  --text-on-accent: #0a0d12;
+
+  /* Type */
+  --font-display: "Archivo", "Archivo Fallback", system-ui, sans-serif;
+  --font-body: "Inter Tight", "Inter Tight Fallback", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, "SF Mono", monospace;
+
+  /* Rhythm */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --focus-ring: 0 0 0 2px var(--ground), 0 0 0 4px var(--nominal);
+
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 420ms;
+  --ease-panel: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}

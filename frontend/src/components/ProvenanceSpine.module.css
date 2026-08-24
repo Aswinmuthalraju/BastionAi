@@ -1,0 +1,102 @@
+.spine {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stage {
+  position: relative;
+  padding-left: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-left: 2px solid var(--seam);
+}
+
+.stage:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+.marker {
+  position: absolute;
+  left: -6px;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--panel);
+  background: var(--text-tertiary);
+}
+
+.marker.verified {
+  background: var(--verified);
+}
+.marker.caution {
+  background: var(--caution);
+}
+.marker.interlock {
+  background: var(--interlock);
+}
+.marker.nominal {
+  background: var(--nominal);
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.stageName {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  flex-shrink: 0;
+  width: 84px;
+}
+
+.summary {
+  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toggle {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.detail {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--ground);
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.haltBanner {
+  margin-top: var(--space-2);
+  color: var(--interlock);
+  font-size: 11px;
+}

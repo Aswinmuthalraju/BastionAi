@@ -1,0 +1,126 @@
+.screen {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -10%, color-mix(in srgb, var(--nominal) 8%, transparent), transparent),
+    var(--ground);
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  padding: var(--space-6) var(--space-5);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: rise var(--motion-slow) var(--ease-panel) forwards;
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mark {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--space-4);
+  display: block;
+}
+
+.title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: var(--space-1);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: var(--space-6);
+}
+
+.field {
+  margin-bottom: var(--space-4);
+}
+
+.label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+.input {
+  width: 100%;
+  background: var(--ground);
+  border: 1px solid var(--seam-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  color: var(--text-primary);
+  transition: border-color var(--motion-fast);
+}
+
+.input:focus-visible {
+  border-color: var(--nominal);
+}
+
+.submit {
+  width: 100%;
+  background: var(--nominal);
+  color: var(--text-on-accent);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-top: var(--space-2);
+  transition: background var(--motion-fast), opacity var(--motion-fast);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--nominal-dim);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+}
+
+.error {
+  background: color-mix(in srgb, var(--interlock) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--interlock) 40%, transparent);
+  color: var(--interlock);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-size: 12px;
+  margin-bottom: var(--space-4);
+}
+
+.hint {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--seam);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+}

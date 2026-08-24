@@ -1,0 +1,134 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-5);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+}
+
+.uploadForm {
+  margin-bottom: var(--space-4);
+}
+
+.dropZone {
+  border: 1px dashed var(--seam-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-3);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color var(--motion-fast), color var(--motion-fast);
+}
+
+.dropZone:hover,
+.dropZoneActive {
+  border-color: var(--nominal);
+  color: var(--text-primary);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.item:hover {
+  background: var(--panel-raised);
+}
+
+.itemActive {
+  background: var(--panel-raised);
+  border-color: var(--seam-strong);
+  color: var(--text-primary);
+}
+
+.itemName {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemMeta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.detail {
+  min-height: 60vh;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.metaLabel {
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-1);
+}
+
+.metaValue {
+  color: var(--text-primary);
+}
+
+.viewer {
+  width: 100%;
+  height: 70vh;
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-md);
+  background: var(--ground);
+}
+
+.empty {
+  color: var(--text-secondary);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.mentions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.mentionChip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--nominal) 14%, transparent);
+  color: var(--nominal);
+}

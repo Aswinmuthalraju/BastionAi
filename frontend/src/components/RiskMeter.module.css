@@ -1,0 +1,34 @@
+.row {
+  display: grid;
+  grid-template-columns: 110px 1fr 48px;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.row + .row {
+  margin-top: var(--space-2);
+}
+
+.label {
+  color: var(--text-secondary);
+}
+
+.track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--seam);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--motion-slow) var(--ease-panel);
+}
+
+.value {
+  text-align: right;
+  color: var(--text-primary);
+}

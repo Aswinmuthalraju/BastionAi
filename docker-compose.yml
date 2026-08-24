@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - BASTION_LLM_BASE_URL=http://ollama:11434/v1
+      - BASTION_EMBEDDING_BASE_URL=http://ollama:11434
+      - BASTION_JWT_SECRET=${BASTION_JWT_SECRET:?set BASTION_JWT_SECRET in .env before starting — see SETUP.md}
+    volumes:
+      - backend_data:/app/data
+    depends_on:
+      - ollama
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8000
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  ollama_models:
+  backend_data:
