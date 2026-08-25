@@ -17,6 +17,9 @@ export function WorkbenchPage() {
     input,
     pendingImage,
     uploadError,
+    historySessions,
+    activeSessionId,
+    isHistoryOpen,
     setInput,
     setPendingImage,
     setUploadError,
@@ -24,6 +27,10 @@ export function WorkbenchPage() {
     clearTurns,
     removeTurn,
     addTurn,
+    toggleHistory,
+    loadSession,
+    startNewChat,
+    deleteSession,
   } = useWorkbench();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,61 +65,128 @@ export function WorkbenchPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.thread} role="log" aria-label="Conversation">
-        {turns.length > 0 && (
-          <div className={styles.threadHeader}>
-            <button type="button" className={styles.clearBtn} onClick={clearTurns}>
-              Clear thread
-            </button>
-          </div>
-        )}
-
-        {turns.length === 0 && (
-          <div className={styles.empty}>
-            <svg className={styles.emptyMark} viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M16 5 L26 9 V16 C26 22 21.5 26.5 16 28 C10.5 26.5 6 22 6 16 V9 Z" fill="none" stroke="var(--text-tertiary)" strokeWidth="2" />
-            </svg>
-            <p>Ask an engineering question, request a calculation, or attach a diagram. Every response carries the pipeline it actually ran through.</p>
-          </div>
-        )}
-
-        {turns.map((turn) => (
-          <TurnView key={turn.id} turn={turn} onApprove={() => runTurn(turn.id, turn.prompt, turn.imageDocId, true)} onReject={() => removeTurn(turn.id)} />
-        ))}
-      </div>
-
-      <form className={styles.composer} onSubmit={handleSubmit}>
-        {pendingImage && (
-          <span className={styles.attachChip}>
-            📎 {pendingImage.filename}
-            <button type="button" onClick={() => setPendingImage(null)} aria-label="Remove attachment">
-              ×
-            </button>
-          </span>
-        )}
-        {uploadError && <div className={styles.errorBanner} role="alert">{uploadError}</div>}
-
-        <div className={styles.inputRow}>
-          <input ref={fileInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp,.txt" className="visually-hidden" onChange={handleFileSelected} aria-hidden="true" tabIndex={-1} />
-          <button type="button" className={styles.iconBtn} onClick={() => fileInputRef.current?.click()} aria-label="Attach a diagram or document">
-            📎
-          </button>
-          <label htmlFor="prompt-input" className="visually-hidden">
-            Engineering query or instruction
-          </label>
-          <input
-            id="prompt-input"
-            className={styles.textInput}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter an engineering query or instruction…"
-          />
-          <button type="submit" className={styles.sendBtn} disabled={!input.trim()}>
-            Execute
+    <div className={styles.container}>
+      <aside
+        className={`${styles.historyPanel} ${!isHistoryOpen ? styles.historyPanelClosed : ""}`}
+        aria-label="Conversation History"
+      >
+        <div className={styles.historyHeader}>
+          <span className={styles.historyTitle}>History</span>
+          <button type="button" className={styles.newChatBtn} onClick={startNewChat}>
+            + New Chat
           </button>
         </div>
-      </form>
+        {historySessions.length === 0 ? (
+          <div className={styles.historyEmpty}>No past sessions</div>
+        ) : (
+          <ul className={styles.historyList}>
+            {historySessions.map((session) => (
+              <li key={session.id}>
+                <div
+                  className={`${styles.historyItem} ${session.id === activeSessionId ? styles.historyItemActive : ""}`}
+                  onClick={() => loadSession(session.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") loadSession(session.id);
+                  }}
+                >
+                  <div className={styles.historyItemInfo}>
+                    <div className={styles.historyItemTitle}>{session.title}</div>
+                    <div className={styles.historyItemDate}>
+                      {new Date(session.updatedAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.historyDeleteBtn}
+                    onClick={(e) => deleteSession(session.id, e)}
+                    title="Delete session"
+                    aria-label={`Delete session ${session.title}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </aside>
+
+      <main className={styles.mainArea}>
+        <div className={styles.topToolbar}>
+          <div className={styles.toolbarLeft}>
+            <button
+              type="button"
+              className={styles.hamburgerBtn}
+              onClick={toggleHistory}
+              aria-label={isHistoryOpen ? "Close history sidebar" : "Open history sidebar"}
+              title="Toggle History Sidebar (☰)"
+            >
+              ☰
+            </button>
+            <span className={styles.toolbarTitle}>Engineering Workbench</span>
+          </div>
+
+          {turns.length > 0 && (
+            <button type="button" className={styles.clearBtn} onClick={clearTurns}>
+              Clear active thread
+            </button>
+          )}
+        </div>
+
+        <div className={styles.thread} role="log" aria-label="Conversation">
+          {turns.length === 0 && (
+            <div className={styles.empty}>
+              <svg className={styles.emptyMark} viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M16 5 L26 9 V16 C26 22 21.5 26.5 16 28 C10.5 26.5 6 22 6 16 V9 Z" fill="none" stroke="var(--text-tertiary)" strokeWidth="2" />
+              </svg>
+              <p>Ask an engineering question, request a calculation, or attach a diagram. Every response carries the pipeline it actually ran through.</p>
+            </div>
+          )}
+
+          {turns.map((turn) => (
+            <TurnView key={turn.id} turn={turn} onApprove={() => runTurn(turn.id, turn.prompt, turn.imageDocId, true)} onReject={() => removeTurn(turn.id)} />
+          ))}
+        </div>
+
+        <form className={styles.composer} onSubmit={handleSubmit}>
+          {pendingImage && (
+            <span className={styles.attachChip}>
+              📎 {pendingImage.filename}
+              <button type="button" onClick={() => setPendingImage(null)} aria-label="Remove attachment">
+                ×
+              </button>
+            </span>
+          )}
+          {uploadError && <div className={styles.errorBanner} role="alert">{uploadError}</div>}
+
+          <div className={styles.inputRow}>
+            <input ref={fileInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp,.txt" className="visually-hidden" onChange={handleFileSelected} aria-hidden="true" tabIndex={-1} />
+            <button type="button" className={styles.iconBtn} onClick={() => fileInputRef.current?.click()} aria-label="Attach a diagram or document">
+              📎
+            </button>
+            <label htmlFor="prompt-input" className="visually-hidden">
+              Engineering query or instruction
+            </label>
+            <input
+              id="prompt-input"
+              className={styles.textInput}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter an engineering query or instruction…"
+            />
+            <button type="submit" className={styles.sendBtn} disabled={!input.trim()}>
+              Execute
+            </button>
+          </div>
+        </form>
+      </main>
     </div>
   );
 }

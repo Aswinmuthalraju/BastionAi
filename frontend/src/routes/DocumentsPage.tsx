@@ -62,6 +62,19 @@ export function DocumentsPage() {
     }
   }
 
+  async function handleDelete(docId: string, filename: string, e?: React.MouseEvent) {
+    if (e) e.stopPropagation();
+    if (!window.confirm(`Are you sure you want to delete "${filename}"?`)) return;
+    try {
+      await api.deleteDocument(docId);
+      setDocuments((prev) => prev.filter((d) => d.doc_id !== docId));
+      if (selectedId === docId) setSelectedId(null);
+      setUploadNotice(`"${filename}" was deleted successfully.`);
+    } catch (err) {
+      setUploadNotice(err instanceof ApiError ? err.message : "Could not delete document.");
+    }
+  }
+
   const selected = documents.find((d) => d.doc_id === selectedId) ?? null;
 
   return (
@@ -112,16 +125,27 @@ export function DocumentsPage() {
           <ul className={styles.list}>
             {documents.map((doc) => (
               <li key={doc.doc_id}>
-                <button
-                  type="button"
-                  className={`${styles.item} ${doc.doc_id === selectedId ? styles.itemActive : ""}`}
-                  onClick={() => setSelectedId(doc.doc_id)}
-                >
-                  <div className={styles.itemName}>{doc.filename}</div>
-                  <div className={styles.itemMeta}>
-                    {doc.data_scope} · {doc.page_count} pg
-                  </div>
-                </button>
+                <div className={styles.itemRow}>
+                  <button
+                    type="button"
+                    className={`${styles.itemBtn} ${doc.doc_id === selectedId ? styles.itemBtnActive : ""}`}
+                    onClick={() => setSelectedId(doc.doc_id)}
+                  >
+                    <div className={styles.itemName}>{doc.filename}</div>
+                    <div className={styles.itemMeta}>
+                      {doc.data_scope} · {doc.page_count} pg
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.deleteBtn}
+                    onClick={(e) => void handleDelete(doc.doc_id, doc.filename, e)}
+                    title="Delete document"
+                    aria-label={`Delete ${doc.filename}`}
+                  >
+                    ×
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -130,13 +154,18 @@ export function DocumentsPage() {
 
       <Panel title={selected ? selected.filename : "Document"} bodyClassName={styles.detail}>
         {!selected && <p className={styles.empty}>Select a document from the library to view it.</p>}
-        {selected && <DocumentDetail doc={selected} />}
+        {selected && (
+          <DocumentDetail
+            doc={selected}
+            onDelete={() => void handleDelete(selected.doc_id, selected.filename)}
+          />
+        )}
       </Panel>
     </div>
   );
 }
 
-function DocumentDetail({ doc }: { doc: DocumentRecord }) {
+function DocumentDetail({ doc, onDelete }: { doc: DocumentRecord; onDelete: () => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -159,6 +188,12 @@ function DocumentDetail({ doc }: { doc: DocumentRecord }) {
 
   return (
     <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <button type="button" className={styles.deleteDetailBtn} onClick={onDelete}>
+          × Delete document
+        </button>
+      </div>
+
       <div className={styles.metaGrid}>
         <div>
           <div className={styles.metaLabel}>Status</div>

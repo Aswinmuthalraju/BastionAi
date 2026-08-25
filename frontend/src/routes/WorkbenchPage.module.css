@@ -1,11 +1,199 @@
-.page {
-  max-width: 1100px;
+.container {
+  display: flex;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: var(--space-5);
+  min-height: calc(100vh - 65px);
+  width: 100%;
+}
+
+.historyPanel {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--seam);
+  background: var(--ground);
   display: flex;
   flex-direction: column;
+  transition: margin-left var(--motion-base) var(--ease-panel), opacity var(--motion-base) var(--ease-panel);
+  overflow: hidden;
+  padding: var(--space-4) var(--space-3);
+}
+
+.historyPanelClosed {
+  margin-left: -260px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--seam);
+}
+
+.historyTitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+}
+
+.newChatBtn {
+  background: var(--nominal);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  transition: opacity var(--motion-fast);
+}
+
+.newChatBtn:hover {
+  opacity: 0.88;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.historyEmpty {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+  width: 100%;
+  transition: background var(--motion-fast), border-color var(--motion-fast);
+}
+
+.historyItem:hover {
+  background: var(--panel-raised);
+}
+
+.historyItemActive {
+  background: var(--panel-raised);
+  border-color: var(--seam-strong);
+}
+
+.historyItemInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.historyItemTitle {
+  font-size: 12px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyItemDate {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.historyDeleteBtn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+  transition: opacity var(--motion-fast), color var(--motion-fast);
+}
+
+.historyDeleteBtn:hover {
+  opacity: 1;
+  color: var(--interlock);
+}
+
+.mainArea {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-5);
   gap: var(--space-4);
-  min-height: calc(100vh - 65px);
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.topToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--seam);
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.hamburgerBtn {
+  background: var(--panel);
+  border: 1px solid var(--seam-strong);
+  color: var(--text-primary);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  transition: border-color var(--motion-fast), color var(--motion-fast), background var(--motion-fast);
+}
+
+.hamburgerBtn:hover {
+  border-color: var(--nominal);
+  color: var(--nominal);
+  background: var(--panel-raised);
+}
+
+.toolbarTitle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .thread {
@@ -15,12 +203,6 @@
   gap: var(--space-4);
   overflow-y: auto;
   padding: var(--space-1);
-}
-
-.threadHeader {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 var(--space-1);
 }
 
 .clearBtn {

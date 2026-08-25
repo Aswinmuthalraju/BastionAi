@@ -138,3 +138,25 @@ def get_document(doc_id: str) -> Dict[str, Any]:
     with get_db() as conn:
         row = conn.execute("SELECT * FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
     return dict(row) if row else None
+
+
+def delete_document(doc_id: str) -> bool:
+    doc = get_document(doc_id)
+    if not doc:
+        return False
+
+    if doc.get("stored_path"):
+        try:
+            Path(doc["stored_path"]).unlink(missing_ok=True)
+        except Exception:
+            pass
+
+    try:
+        vector_store_service.delete_document_chunks(doc_id)
+    except Exception:
+        pass
+
+    with get_db() as conn:
+        conn.execute("DELETE FROM documents WHERE doc_id = ?", (doc_id,))
+
+    return True

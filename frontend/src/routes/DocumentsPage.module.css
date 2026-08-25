@@ -44,8 +44,16 @@
   gap: var(--space-2);
 }
 
-.item {
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   width: 100%;
+}
+
+.itemBtn {
+  flex: 1;
+  min-width: 0;
   text-align: left;
   background: none;
   border: 1px solid transparent;
@@ -55,14 +63,49 @@
   font-size: 12px;
 }
 
-.item:hover {
+.itemBtn:hover {
   background: var(--panel-raised);
 }
 
-.itemActive {
+.itemBtnActive {
   background: var(--panel-raised);
   border-color: var(--seam-strong);
   color: var(--text-primary);
+}
+
+.deleteBtn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color var(--motion-fast), background var(--motion-fast);
+}
+
+.deleteBtn:hover {
+  color: var(--interlock);
+  background: color-mix(in srgb, var(--interlock) 12%, transparent);
+}
+
+.deleteDetailBtn {
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--interlock) 40%, transparent);
+  color: var(--interlock);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-bottom: var(--space-4);
+  transition: background var(--motion-fast);
+}
+
+.deleteDetailBtn:hover {
+  background: color-mix(in srgb, var(--interlock) 15%, transparent);
 }
 
 .itemName {

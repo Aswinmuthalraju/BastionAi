@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, s
 from fastapi.responses import FileResponse
 
 from app.deps import get_current_user
-from app.ingest.pipeline import get_document, ingest_document, list_documents
+from app.ingest.pipeline import delete_document, get_document, ingest_document, list_documents
 
 router = APIRouter()
 
@@ -68,3 +68,16 @@ def get_document_file(doc_id: str, user: dict = Depends(get_current_user)):
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=f"Document '{doc_id}' does not exist.")
     _assert_visible(doc, user)
     return FileResponse(doc["stored_path"], media_type=doc["content_type"], filename=doc["filename"])
+
+
+@router.delete("/documents/{doc_id}")
+def delete_document_endpoint(doc_id: str, user: dict = Depends(get_current_user)):
+    doc = get_document(doc_id)
+    if doc is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=f"Document '{doc_id}' does not exist.")
+    _assert_visible(doc, user)
+    deleted = delete_document(doc_id)
+    if not deleted:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete document.")
+    return {"message": "Document deleted successfully", "doc_id": doc_id}
+

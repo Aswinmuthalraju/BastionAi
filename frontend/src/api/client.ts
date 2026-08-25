@@ -90,6 +90,9 @@ export const api = {
     return request<UploadResult>("/documents/upload", { method: "POST", body: form });
   },
 
+  deleteDocument: (docId: string) =>
+    request<{ message: string; doc_id: string }>(`/documents/${docId}`, { method: "DELETE" }),
+
   // Fetched as an authenticated blob rather than a plain <iframe src> URL, since
   // the file endpoint requires a bearer token that only a real fetch() can send —
   // and a blob URL never puts the session token in browser history or server logs.
