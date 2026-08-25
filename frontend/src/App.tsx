@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, BrowserRouter, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
+import { WorkbenchProvider } from "./context/WorkbenchContext";
 import { TopBar } from "./components/TopBar";
 import { LoginPage } from "./routes/LoginPage";
 import { WorkbenchPage } from "./routes/WorkbenchPage";
@@ -53,7 +54,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <WorkbenchProvider>
+          <AppRoutes />
+        </WorkbenchProvider>
       </AuthProvider>
     </BrowserRouter>
   );

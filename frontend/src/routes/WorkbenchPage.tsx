@@ -1,42 +1,31 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, type FormEvent } from "react";
 import { ApiError, api } from "../api/client";
 import type { ChatResponse } from "../api/types";
 import { ProvenanceSpine } from "../components/ProvenanceSpine";
 import { RiskMeterRow } from "../components/RiskMeter";
+import { useWorkbench, type ChatTurn } from "../context/WorkbenchContext";
 import { renderRichText } from "../lib/richText";
 import styles from "./WorkbenchPage.module.css";
-
-interface ChatTurn {
-  id: string;
-  prompt: string;
-  imageDocId?: string;
-  imageName?: string;
-  response?: ChatResponse;
-  pending: boolean;
-  error?: string;
-}
 
 function newId() {
   return `t-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export function WorkbenchPage() {
-  const [turns, setTurns] = useState<ChatTurn[]>([]);
-  const [input, setInput] = useState("");
-  const [pendingImage, setPendingImage] = useState<{ docId: string; filename: string } | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const {
+    turns,
+    input,
+    pendingImage,
+    uploadError,
+    setInput,
+    setPendingImage,
+    setUploadError,
+    runTurn,
+    clearTurns,
+    removeTurn,
+    addTurn,
+  } = useWorkbench();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  async function runTurn(turnId: string, prompt: string, imageDocId?: string, userApproved = false) {
-    setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, pending: true, error: undefined } : t)));
-    try {
-      const response = await api.chat({ prompt, image_doc_id: imageDocId, user_approved: userApproved });
-      setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, response, pending: false } : t)));
-    } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Request failed unexpectedly.";
-      setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, pending: false, error: message } : t)));
-    }
-  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -45,10 +34,7 @@ export function WorkbenchPage() {
 
     const id = newId();
     const imageDocId = pendingImage?.docId;
-    setTurns((prev) => [
-      ...prev,
-      { id, prompt, imageDocId, imageName: pendingImage?.filename, pending: true },
-    ]);
+    addTurn({ id, prompt, imageDocId, imageName: pendingImage?.filename, pending: true });
     setInput("");
     setPendingImage(null);
     void runTurn(id, prompt, imageDocId);
@@ -74,6 +60,14 @@ export function WorkbenchPage() {
   return (
     <div className={styles.page}>
       <div className={styles.thread} role="log" aria-label="Conversation">
+        {turns.length > 0 && (
+          <div className={styles.threadHeader}>
+            <button type="button" className={styles.clearBtn} onClick={clearTurns}>
+              Clear thread
+            </button>
+          </div>
+        )}
+
         {turns.length === 0 && (
           <div className={styles.empty}>
             <svg className={styles.emptyMark} viewBox="0 0 32 32" aria-hidden="true">
@@ -84,7 +78,7 @@ export function WorkbenchPage() {
         )}
 
         {turns.map((turn) => (
-          <TurnView key={turn.id} turn={turn} onApprove={() => runTurn(turn.id, turn.prompt, turn.imageDocId, true)} onReject={() => setTurns((prev) => prev.filter((t) => t.id !== turn.id))} />
+          <TurnView key={turn.id} turn={turn} onApprove={() => runTurn(turn.id, turn.prompt, turn.imageDocId, true)} onReject={() => removeTurn(turn.id)} />
         ))}
       </div>
 
